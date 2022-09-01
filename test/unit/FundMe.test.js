@@ -30,8 +30,9 @@ const { developmentChains } = require('../../helper-hardhat-config');
 
       describe('fund', async () => {
         it('Falla si no se envía suficiente ETH', async () => {
-          await expect(fundMe.fund()).to.be.revertedWith(
-            'You need to spend more ETH!'
+          await expect(fundMe.fund()).to.be.revertedWithCustomError(
+            fundMe,
+            'FundMe__SpendMoreETH'
           );
         });
 
@@ -165,7 +166,12 @@ const { developmentChains } = require('../../helper-hardhat-config');
           const attacker = accounts[1];
           const attackerConnectedContract = await fundMe.connect(attacker);
 
-          await expect(attackerConnectedContract.withdraw()).to.be.reverted;
+          await expect(
+            attackerConnectedContract.withdraw()
+          ).to.be.revertedWithCustomError(
+            attackerConnectedContract,
+            'FundMe__NotOwner'
+          );
         });
 
         it('retirar dinero para muchos inversionistas eficientemente', async () => {
